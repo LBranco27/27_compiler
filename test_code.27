@@ -1,0 +1,18 @@
+// codigo para testes
+
+function soma(b8 first_number, b8 second_number) {
+	return (first_number + second_number);
+}
+
+function main () {
+	b8 var1;
+	var1 = 27;
+
+	b8 var2;
+	var2 = 27;
+
+	b8 sum;
+	sum = soma(var1 , var2);
+
+	print(sum);
+}

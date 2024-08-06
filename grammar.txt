@@ -1,0 +1,56 @@
+<program> ::= <statement>*
+
+<statement> ::= <var_decl> | <func_decl> | <assign_stmt> | <func_call>
+              | <if_stmt> | <while_stmt> | <print_stmt>
+
+<var_decl> ::= "b1" <identifier> ";" | "b4" <identifier> ";" | "b8" <identifier> ";"
+		| "b16" <identifier> ";" | "b32" <identifier> ";" | "b64" <identifier> ";"
+		| "b128" <identifier> ";"
+
+<func_decl> ::= "function" <identifier> "(" <param_list>? ")" "{" <statement>* <return_stmt>? "}"
+
+<param_list> ::= <param> ("," <param>)*
+<param_call_list> ::= <identifier> ("," <identifier>)*
+
+<param> ::= "b1" <identifier> | "b2" <identifier> | "b4" <identifier> 
+		| "b8" <identifier> | "b16" <identifier> | "b32" <identifier> 
+		| "b64" <identifier> | "b128" <identifier>
+
+
+<assign_stmt> ::= <identifier> "=" <expression> | <func_call> ";"
+
+<func_call> ::= <identifier> "(" <param_call_list>? ")" ";"
+
+<if_stmt> ::= "if" "(" <bool_expr> ")" "{" <statement>* "}" 
+             ("else" "{" <statement>* "}")?
+
+<while_stmt> ::= "while" "(" <bool_expr> ")" "{" <statement>* <break_stmt>? <continue_stmt>? "}"
+
+<return_stmt> ::= "return" <expression>? ";"
+
+<break_stmt> ::= "break" ";"
+
+<continue_stmt> ::= "continue" ";"
+
+<print_stmt> ::= "print" "(" <print_arg> ")" ";"
+<print_arg> ::= <string> | <identifier>
+
+<expression> ::= <arith_expr> | <bool_expr> | <identifier>
+
+<arith_expr> ::= <term> (("+" | "-") <term>)*
+<term> ::= <factor> (("*" | "/") <factor>)*
+<factor> ::= <number> | <identifier> | "(" <arith_expr> ")"
+
+<bool_expr> ::= <rel_expr> | <bool_value>
+<rel_expr> ::= <arith_expr> ("==" | "!=" | ">" | ">=" | "<" | "<=") <arith_expr>
+
+<identifier> ::= <permited_id_characters> | <letter> (<letter> | <digit> | <permited_id_characters>)*
+<number> ::= <digit>+
+<bool_value> ::= "true" | "false"
+
+<string> ::= "\"" <character>* "\""
+
+<letter> ::= "a" | "b" | "c" | ... | "z" | "A" | "B" | "C" | ... | "Z"
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<character> ::= <letter> | <digit> | " " | "!" | ... | "~"
+<permited_id_characters> ::= "_" | "-"
