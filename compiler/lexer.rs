@@ -38,51 +38,62 @@ impl<'a> Lexer<'a> {
                 '"' => return self.lex_string(),
                 '=' => {
                     self.input.next();
+                    self.current_column += 1;
                     if self.input.peek() == Some(&'=') {
                         self.input.next();
-                        Token::Equal
+                        self.current_column += 1;
+                        Token::Equal(self.current_line, self.current_column)
                     } else {
-                        Token::Assing
+                        Token::Assing(self.current_line, self.current_column)
                     }
                 }
                 '!' => {
                     self.input.next();
+                    self.current_column += 1;
                     if self.input.peek() == Some(&'=') {
                         self.input.next();
-                        Token::NotEqual
+                        self.current_column += 1;
+                        Token::NotEqual(self.current_line, self.current_column)
                     } else {
                         panic!("Unexpected character after !, line {}", self.current_line);
                     }
                 }
                 '>' => {
                     self.input.next();
+                    self.current_column += 1;
                     if self.input.peek() == Some(&'=') {
                         self.input.next();
-                        Token::GreaterEqual
+                        self.current_column += 1;
+                        Token::GreaterEqual(self.current_line, self.current_column)
                     } else {
-                        Token::Greater
+                        Token::Greater(self.current_line, self.current_column)
                     }
                 }
                 '<' => {
                     self.input.next();
+                    self.current_column += 1;
                     if self.input.peek() == Some(&'=') {
                         self.input.next();
-                        Token::LessEqual
+                        self.current_column += 1;
+                        Token::LessEqual(self.current_line, self.current_column)
                     } else {
-                        Token::Less
+                        Token::Less(self.current_line, self.current_column)
                     }
                 }
                 '+' => {
                     self.input.next();
-                    Token::Plus
+                    self.current_column += 1;
+                    Token::Plus(self.current_line, self.current_column)
                 }
                 '-' => {
                     self.input.next();
-                    Token::Minus
+                    self.current_column += 1;
+                    Token::Minus(self.current_line, self.current_column)
                 }
                 '*' => {
                     self.input.next();
-                    Token::Star
+                    self.current_column += 1;
+                    Token::Star(self.current_line, self.current_column)
                 }
                 '/' => {
                     if self.input.peek() == Some(&'/'){
@@ -90,36 +101,43 @@ impl<'a> Lexer<'a> {
                         continue;
                     }
                     self.input.next();
-                    Token::Slash
+                    self.current_column += 1;
+                    Token::Slash(self.current_line, self.current_column)
                 }
                 '(' => {
                     self.input.next();
-                    Token::LeftParenthesis
+                    self.current_column += 1;
+                    Token::LeftParenthesis(self.current_line, self.current_column)
                 }
                 ')' => {
                     self.input.next();
-                    Token::RightParenthesis
+                    self.current_column += 1;
+                    Token::RightParenthesis(self.current_line, self.current_column)
                 }
                 '{' => {
                     self.input.next();
-                    Token::LeftBraces
+                    self.current_column += 1;
+                    Token::LeftBraces(self.current_line, self.current_column)
                     }
                 '}' => {
                     self.input.next();
-                    Token::RightBraces
+                    self.current_column += 1;
+                    Token::RightBraces(self.current_line, self.current_column)
                 }
                 ';' => {
                     self.input.next();
-                    Token::Semicolon
+                    self.current_column += 1;
+                    Token::Semicolon(self.current_line, self.current_column)
                 }
                 ',' => {
                     self.input.next();
-                    Token::Comma
+                    self.current_column += 1;
+                    Token::Comma(self.current_line, self.current_column)
                 }
                 _ => panic!("Unexpected character: {}, line {}", ch, self.current_line),
             };
         }
-        Token::EOF
+        Token::EOF(self.current_line, self.current_column)
     }
 
     fn consume_until_newline(&mut self) {
@@ -148,6 +166,7 @@ impl<'a> Lexer<'a> {
     fn consume_newline(&mut self) {
         self.input.next();
         self.current_line += 1;
+        self.current_column = 0;
     }
 
     fn lex_identifier_or_keyword(&mut self) -> Token {
@@ -155,6 +174,7 @@ impl<'a> Lexer<'a> {
         while let Some(&ch) = self.input.peek() {
             if ch.is_alphanumeric() || permitted_id_characters().contains(&ch) {
                 self.input.next();
+                self.current_column += 1;
                 word.push(ch);
             } else {
                 break;
@@ -162,52 +182,55 @@ impl<'a> Lexer<'a> {
         }
 
         match word.as_str() {
-            "B1" => Token::B1,
-            "B2" => Token::B2,
-            "B4" => Token::B4,
-            "B8" => Token::B8,
-            "B16" => Token::B16,
-            "B32" => Token::B32,
-            "B64" => Token::B64,
-            "B128" => Token::B128,
-            "b1" => Token::B1,
-            "b2" => Token::B2,
-            "b4" => Token::B4,
-            "b8" => Token::B8,
-            "b16" => Token::B16,
-            "b32" => Token::B32,
-            "b64" => Token::B64,
-            "b128" => Token::B128,
-            "function" => Token::Function,
-            "if" => Token::If,
-            "else" => Token::Else,
-            "while" => Token::While,
-            "return" => Token::Return,
-            "break" => Token::Break,
-            "continue" => Token::Continue,
-            "print" => Token::Print,
-            "true" => Token::True,
-            "false" => Token::False,
-            _ => Token::Identifier(word),
+            "B1" => Token::B1(self.current_line, self.current_column),
+            "B2" => Token::B2(self.current_line, self.current_column),
+            "B4" => Token::B4(self.current_line, self.current_column),
+            "B8" => Token::B8(self.current_line, self.current_column),
+            "B16" => Token::B16(self.current_line, self.current_column),
+            "B32" => Token::B32(self.current_line, self.current_column),
+            "B64" => Token::B64(self.current_line, self.current_column),
+            "B128" => Token::B128(self.current_line, self.current_column),
+            "b1" => Token::B1(self.current_line, self.current_column),
+            "b2" => Token::B2(self.current_line, self.current_column),
+            "b4" => Token::B4(self.current_line, self.current_column),
+            "b8" => Token::B8(self.current_line, self.current_column),
+            "b16" => Token::B16(self.current_line, self.current_column),
+            "b32" => Token::B32(self.current_line, self.current_column),
+            "b64" => Token::B64(self.current_line, self.current_column),
+            "b128" => Token::B128(self.current_line, self.current_column),
+            "function" => Token::Function(self.current_line, self.current_column),
+            "if" => Token::If(self.current_line, self.current_column),
+            "else" => Token::Else(self.current_line, self.current_column),
+            "while" => Token::While(self.current_line, self.current_column),
+            "return" => Token::Return(self.current_line, self.current_column),
+            "break" => Token::Break(self.current_line, self.current_column),
+            "continue" => Token::Continue(self.current_line, self.current_column),
+            "print" => Token::Print(self.current_line, self.current_column),
+            "true" => Token::True(self.current_line, self.current_column),
+            "false" => Token::False(self.current_line, self.current_column),
+            _ => Token::Identifier(word, self.current_line, self.current_column),
         }
     }
     
     fn lex_string(&mut self) -> Token {
         self.input.next();
+        self.current_column += 1;
         let mut string = String::new();
         while let Some(&ch) = self.input.peek() {
             match ch {
                 '"' => {
                     self.input.next();
+                    self.current_column += 1;
                     break;
                 }
                 _ => {
                     string.push(ch);
                     self.input.next();
+                    self.current_column += 1;
                 }
             }
         }
-        Token::StringLiteral(string)
+        Token::StringLiteral(string, self.current_line, self.current_column)
     }
 
     fn lex_number(&mut self) -> Token {
@@ -215,11 +238,12 @@ impl<'a> Lexer<'a> {
         while let Some(&ch) = self.input.peek() {
             if ch.is_digit(10) {
                 self.input.next();
+                self.current_column += 1;
                 word.push(ch);
             } else {
                 break;
             }
         }
-        Token::Number(word.parse().unwrap())
+        Token::Number(word.parse().unwrap(), self.current_line, self.current_column)
     }
 }

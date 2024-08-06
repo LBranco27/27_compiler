@@ -12,7 +12,7 @@ function main () {
 	var2 = 27;
 
 	b8 sum;
-	sum = soma(var1 , var2);
+	sum = soma(var1, var2);
 
 	print(sum);
 }

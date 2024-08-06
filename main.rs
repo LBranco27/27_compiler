@@ -13,12 +13,13 @@ fn main() -> std::io::Result<()> {
     loop{
         let token = lexer.next_token();
         tokens.push(token.clone());
-        if token == Token::EOF {
-            println!("LEXER ENDED");
-            println!("tokens: {:?}", tokens);
-            //let mut file = File::create("tokens.lxr")?;
-            //file.write_all(tokens);
-            break;
+        match token {
+            Token::EOF(_, _) => {
+                println!("LEXER ENDED");
+                println!("tokens: {:?}", tokens);
+                break;
+            }
+            _ => println!("{:?}", token),
         }
 
         println!("{:?}", token);
